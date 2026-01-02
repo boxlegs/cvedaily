@@ -1,0 +1,3 @@
+git+https://github.com/boxlegs/cveapi
+python-ntfy
+markdown
