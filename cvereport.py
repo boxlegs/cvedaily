@@ -28,7 +28,7 @@ for severity in [x for x in ["CRITICAL", "HIGH", "MEDIUM", "LOW"] if x in severi
     
     cves = get_cves(start_date=(datetime.now() - timedelta(days=1)), end_date=datetime.now(), severity=severity)
     
-    message_lines.append(f"## {severity}\n")
+    message_lines.append(f"\n## {severity}\n")
     message_lines.append(f"\nTotal {severity}-level CVEs: {len(cves)}\n")
     for i, c in enumerate(cves, start=1):
 
