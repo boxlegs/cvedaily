@@ -12,7 +12,7 @@ NTFY_MTU = 32000  # Maximum Transmission Unit for ntfy messages as per default c
 parser = argparse.ArgumentParser(description="CVEDaily options")
 parser.add_argument("--server", "-s", default="https://ntfy.sh", help="ntfy server hostname or URL")
 parser.add_argument("--severity", "-v", default="CRITICAL", help="severity filter for CVEs (e.g. CRITICAL, HIGH, MEDIUM, LOW, ALL)")
-parser.add_argument("--topic", "-t", default="topic", help="ntfy topic to publish messages to")
+parser.add_argument("--topic", "-t", default="cvedaily", help="ntfy topic to publish messages to")
 
 args = parser.parse_args()
 
