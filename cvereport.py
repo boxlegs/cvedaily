@@ -19,31 +19,31 @@ args = parser.parse_args()
 server_host = args.server
 topic = args.topic
 
-# TODO: Add multiple severity level support. Will require multiple API calls as NVD only accepts one at a time
-severity_arg = args.severity.upper()
-severity = None if severity_arg == "ALL" else severity_arg
+severities = args.severity.strip().upper().split(",")
 
-# Re-fetch CVEs using the requested severity
-cves = get_cves(start_date=(datetime.now() - timedelta(days=1)), end_date=datetime.now(), severity=severity)
-
-# TODO: Maybe couple priority to CVE criticality, keywords etc?
 client = NtfyClient(server=server_host, topic=topic)
 
-message_lines = [f"Total {severity_arg}-level CVEs: {len(cves)}\n"]
-for i, c in enumerate(cves, start=1):
+message_lines = []
+for severity in [x for x in ["CRITICAL", "HIGH", "MEDIUM", "LOW"] if x in severities]:
+    
+    cves = get_cves(start_date=(datetime.now() - timedelta(days=1)), end_date=datetime.now(), severity=severity)
+    
+    message_lines.append(f"## {severity}\n")
+    message_lines.append(f"\nTotal {severity}-level CVEs: {len(cves)}\n")
+    for i, c in enumerate(cves, start=1):
 
-    message_lines.append(f"## {c.id}\n")
-    first_line = str(c.description).splitlines()[0]
-    for metric in c.metrics.values():
-        message_lines.append(f"**CVSS {metric.version} Severity**: {metric.baseScore}")
-    message_lines.append(f"**Published**: {c.published.strftime('%H:%M %d/%m/%Y')}")
-    message_lines.append(f"**Description**: {first_line}")
+        message_lines.append(f"### {c.id}\n")
+        first_line = str(c.description).splitlines()[0]
+        for metric in c.metrics.values():
+            message_lines.append(f"**CVSS {metric.version} Severity**: {metric.baseScore}")
+        message_lines.append(f"**Published**: {c.published.strftime('%H:%M %d/%m/%Y')}")
+        message_lines.append(f"**Description**: {first_line}")
 
-    # Refs
-    if len(c.references) > 0:
-        message_lines.append(f"\n**References**:\n")
-        for reference in c.references:
-            message_lines.append(f"[{reference.source}]({reference.url})")
+        # Refs
+        if len(c.references) > 0:
+            message_lines.append(f"\n**References**:\n")
+            for reference in c.references:
+                message_lines.append(f"[{reference.source}]({reference.url})")
         
 full_report = "\n".join(message_lines)
 
