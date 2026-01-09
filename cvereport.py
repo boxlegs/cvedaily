@@ -58,5 +58,5 @@ if len(full_report) > NTFY_MTU: # If message is too long, send full report as fi
     if os.path.exists(report_path):
         os.remove(report_path)
 else:
-    client.send(title="CVE Daily Report", message=full_report, priority=client.MessagePriority.HIGH, format_as_markdown=True)
+    client.send(title="CVE Daily Report", message=full_report.encode("utf-8"), priority=client.MessagePriority.HIGH, format_as_markdown=True)
 
